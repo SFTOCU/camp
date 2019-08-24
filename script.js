@@ -58,13 +58,19 @@ var app = new Vue({
                     {cost:25,option:"実施"},
             ]},
                   
-        ]
+        ],
+        sifts:[
+            0,0,0,0,0,0,0,0,0,0 
+        ],
     },
     methods:{
         nextpage:function(){
             if(this.page==3&&this.costSum==0)return alert("広報企画を選択してください！！");
         
             location.hash=(this.page+1);
+        },
+        previouspage:function(){
+            location.hash=(this.page-1);
         }
     },
     computed:{
@@ -79,6 +85,13 @@ var app = new Vue({
             var buf = 0;
             for(var i=0; i<this.events.length; i++){
                 if(this.events[i].soption != "") buf += Number(this.events[i].options[this.events[i].soption].cost);
+            }
+            return buf
+        },
+        siftSum:function(){
+            var buf = 0;
+            for(var i=0; i<this.sifts.length; i++){
+                buf += Number(this.sifts[i]);
             }
             return buf
         }

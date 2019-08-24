@@ -24,6 +24,7 @@
                     <li v-for="(gift, index) in gifts"><input type="radio" name="gift" v-bind:id="'gift'+index" v-bind:value="index" v-model="sgift"><label v-bind:for="'gift'+index">{{gift.content}}</label></li>
                 </ul>
                 <div align="center" v-if="sgift!='undefind'">▼▽▼▽▼景品決定▼▽▼▽▼<br><font color="red">{{sgift=="undefind"?"":gifts[sgift].content}}</font><br><button v-on:click="nextpage">次へ</button></div>
+                <button v-on:click="previouspage">戻る</button>
             </div>
             <div v-if="page==2">
                 <h2>②広報のコンセプトを決めよう</h2>
@@ -34,6 +35,7 @@
                 </table>
                 <div v-if="conceptValueSum!=6">優先順位を正しく入力してください</div>
                 <div align="center" v-else>優先順位確定<br><button v-on:click="nextpage">次へ</button></div>
+                <button v-on:click="previouspage">戻る</button>
             </div>
             <div v-if="page==3">
                 <h2>③広報の企画を練ろう</h2>
@@ -48,15 +50,18 @@
                     </li>
                 </ul>
                 <div align="center">合計コスト {{costSum}} <font color="red" v-if="costSum>120">コスト超過</font><div v-else><button v-on:click="nextpage">次へ</button></div></div>
+                <button v-on:click="previouspage">戻る</button>
             </div>
             <div v-if="page==4">
                 <h2>④シフトを組もう</h2>
                 <div>以下のルール<ul><li>開催期間は期末試験期間の2週間（10日間）とする</li><li>簡単のため、シフトは1日1枠だけとする</li><li>シフト1枠に何人の支部員を動員しても構わない</li><li>0人のシフト枠があっても構わない</li><li>シフト動員人数によって認知者数、決定率の変動は無いとする</li><li>1人につき4枠までしかシフトに入れてはいけない</li><li>シフト1枠でで対応できる客の数は（シフト人数）× 5人</li><li>客の人数制限以内の客に先着順で寄付してもらえるとする</li><li>それぞれのシフト枠に均等に客がくるとは限らない</li></ul>を心にとめてシフトを組んでみよう。<br>シフト人数を入力↓</div>
                 <table>
                     <tr><th>週目 | 曜日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th></tr>
-                    <tr><th>1週目</th><td><input type="number" id="sift1" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift2" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift3" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift4" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift5" max=5 min=0 maxlength="1"></td></tr>
-                    <tr><th>2週目</th><td><input type="number" id="sift6" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift7" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift8" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift9" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift10" max=5 min=0 maxlength="1"></td></tr>
+                    <tr><th>1週目</th><td><input type="number" id="sift1" v-model="sifts[0]" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift2" v-model="sifts[1]" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift3" v-model="sifts[2]" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift4" v-model="sifts[3]" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift5" v-model="sifts[4]" max=5 min=0 maxlength="1"></td></tr>
+                    <tr><th>2週目</th><td><input type="number" id="sift6" v-model="sifts[5]" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift7" v-model="sifts[6]" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift8" v-model="sifts[7]" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift9" v-model="sifts[8]" max=5 min=0 maxlength="1"></td><td><input type="number" id="sift10" v-model="sifts[9]" max=5 min=0 maxlength="1"></td></tr>
                 </table>
+                <div v-if="siftSum<=24">あと {{24-siftSum}} 人シフトに入れます<div v-if="siftSum>0" align="center"><button v-on:click="nextpage">シフトを確定して次へ</button></div></div>
+                <div v-else><font color="red">シフト人数がオーバーしました。{{siftSum-24}}人減らしてください</font></div>
             </div>
         </div>
         <!-- 開発バージョン、便利なコンソールの警告が含まれています -->
