@@ -7,74 +7,49 @@
         <meta charset="utf-8">
     </head>
     <body>
-        <div>
-            <div>
+        <div id="app">
+            <div v-if="page==0">
                 <h2>⓪はじめに</h2>
                 <div>このゲームの目的はSFTのメインイベントである回収イベントのシミュレーションを通して皆さんにデータ収集の大切さを実感してもらうことです。</div>
                 <div>ゲームでは、班を支部に見立てて<ul><li>景品決め</li><li>広報の議論</li><li>シフト決め</li></ul>を行い、ゲーム用に簡略化した回収イベント企画を実際のように班ごとに考えていきます。</div>
                 <div>企画が決まれば、プログラムが回収イベントの結果（回収冊数）を計算してくれるのでその冊数を競い合います。</div>
                 <div>このゲームにおいて、寄付冊数合計の期待値は<div align = "center">寄付冊数合計 = 認知者数 × 決定率 × 1人当たりの寄付冊数</div>の式で説明されるものとします。</div>
                 <div>どんな施策を打てばどの変数が変化するか考えて企画を立ててみましょう。</div>
+                <div align="center"><button v-on:click="nextpage">ゲームを始める</button></div>
             </div>
-            <div>
+            <div v-if="page==1">
                 <h2>①目玉景品を決めよう</h2>
-                <div>以下の４つが目玉景品（1等）の候補として挙がった。話し合って一つだけに絞り、それを選択しよう。</div>
+                <div>以下の{{gifts.length}}つが目玉景品（1等）の候補として挙がった。話し合って一つだけに絞り、それを選択しよう。</div>
                 <ul>
-                    <li><input type="radio" name="gift" id="gift1"><label for="gift1">ハーゲンダッツ券（当選者多数）</label></li>
-                    <li><input type="radio" name="gift" id="gift2"><label for="gift2">Amazonギフト5000円分（当選者数名）</label></li>
-                    <li><input type="radio" name="gift" id="gift3"><label for="gift3">夢の国ペアチケット（当選者1名）</label></li>
-                    <li><input type="radio" name="gift" id="gift4"><label for="gift4">switch先生（当選者1名）</label></li>
+                    <li v-for="(gift, index) in gifts"><input type="radio" name="gift" v-bind:id="'gift'+index" v-bind:value="index" v-model="sgift"><label v-bind:for="'gift'+index">{{gift.content}}</label></li>
                 </ul>
+                <div align="center" v-if="sgift!='undefind'">▼▽▼▽▼景品決定▼▽▼▽▼<br><font color="red">{{sgift=="undefind"?"":gifts[sgift].content}}</font><br><button v-on:click="nextpage">次へ</button></div>
             </div>
-            <div>
+            <div v-if="page==2">
                 <h2>②広報のコンセプトを決めよう</h2>
                 <div>広報のコンセプトとして支部員から<ul><li>気軽に国際協力ができる（国際協力）</li><li>使わない教科書を簡単に処分できる（教科書処分）</li><li>豪華景品が当たるかもしれない（豪華景品）</li></ul>の3項目が挙がった。<br>これらに基づいた広報の分量に差をつけますか？それとも同じ分量で広報していきますか？<br><br>差をつける場合は、多い順に１，２，３と順位をつけてください。<br>差をつけない場合は、<font color="red">全て「２」と入力</font>してください。</div>
                 <table>
                     <tr><th>コンセプト</th><th>優先順位</th></tr>
-                    <tr><td>国際協力</td><td><input type="number" max="3" min="1" maxlength="1">位</td></tr>
-                    <tr><td>教科書処分</td><td><input type="number" max="3" min="1" maxlength="1">位</td></tr>
-                    <tr><td>豪華景品</td><td><input type="number" max="3" min="1" maxlength="1">位</td></tr>
+                    <tr v-for="concept in concepts"><td>{{concept.content}}</td><td><input type="number" max="3" min="1" maxlength="1" v-model="concept.value">位</td></tr>
                 </table>
+                <div v-if="conceptValueSum!=6">優先順位を正しく入力してください</div>
+                <div align="center" v-else>優先順位確定<br><button v-on:click="nextpage">次へ</button></div>
             </div>
-            <div>
+            <div v-if="page==3">
                 <h2>③広報の企画を練ろう</h2>
                 <div>広報に関するミーティングです。以下に示した企画のどれを実施するか、コストが120以内に収まるように相談し、相談結果を入力しよう。</div>
                 <ul>
-                    <li>
-                        twitter広報：twitterをよく見る人が寄付してくれやすくなる<br>
-                        <input type=radio name="twitter"　id="twitter_n" value="0"><label for="twitter_n">不実施(コスト0)</label>
-                        <input type=radio name="twitter"　id="twitter_l" value="20"><label for="twitter_l">低強度(コスト20)</label>
-                        <input type=radio name="twitter"　id="twitter_m" value="30"><label for="twitter_m">中強度(コスト30)</label>
-                        <input type=radio name="twitter"　id="twitter_h" value="45"><label for="twitter_h">高強度(コスト45)</label>
-                    </li>
-                    <li>insta広報：instaをよく見る人が寄付してくれやすくなる<br>
-                        <input type=radio name="insta"　id="insta_n" value="0"><label for="insta_n">不実施(コスト0)</label>
-                        <input type=radio name="insta"　id="insta_l" value="20"><label for="insta_l">低強度(コスト20)</label>
-                        <input type=radio name="insta"　id="insta_m" value="30"><label for="insta_m">中強度(コスト30)</label>
-                        <input type=radio name="insta"　id="insta_h" value="45"><label for="insta_h">高強度(コスト45)</label>
-                    </li>
-                    <li>ポスター広報：学内掲示のポスターをよく見る人が寄付してくれやすくなる<br>
-                        <input type=radio name="poster"　id="poster_n" value="0"><label for="poster_n">不実施(コスト0)</label>
-                        <input type=radio name="poster"　id="poster_l" value="20"><label for="poster_l">低強度(コスト20)</label>
-                        <input type=radio name="poster"　id="poster_m" value="30"><label for="poster_m">中強度(コスト30)</label>
-                        <input type=radio name="poster"　id="poster_h" value="45"><label for="poster_h">高強度(コスト45)</label>
-                    </li><br>
-                    <li>ビラ配り：多くの人に認知してもらえ、また、認知してる人が少し寄付してくれやすくなる<br>
-                        <input type=radio name="flyer" id="flyer_n" value="0"><label for="flyer_n">不実施(コスト0)</label>
-                        <input type=radio name="flyer" id="flyer" value="25"><label for="flyer">実施する(コスト25)</label>
-                    </li>
-                    <li>学部別ターゲッティング:指定の学部の人が寄付してくれやすくなる<br>
-                        <input type="radio" name="major" id="majo_n" value="0"><label for="major_n">不実施</label>
-                        <input type="radio" name="major" id="majo_s" value="15"><label for="major_s">理系(コスト15)</label>
-                        <input type="radio" name="major" id="majo_l" value="15"><label for="major_l">文系(コスト15)</label>
-                    </li>
-                    <li>
-                        友人紹介キャンペーン：一定確率で寄付者が友人を連れてきてくれて寄付冊数が2倍になる<br>
-                        <input type="radio" name="friends" id="friends_n" value="0"><label for="friends_n">不実施</label><input type="radio" name="friends" id="friends" value="25"><label for="friends">実施する(コスト25)</label>
+                    <li v-for="(event, index1) in events">
+                        {{event.title}}：{{event.explanation}}<br>
+                        <span v-for="(option, index2) in event.options">
+                            <input type=radio v-bind:id="'event'+index1+'-'+index2" v-bind:name="'event'+index1" v-bind:value="index2" v-model="event.soption">
+                            <label v-bind:for="'event'+index1+'-'+index2">{{option.option}}(コスト{{option.cost}})</label>
+                        </span>
                     </li>
                 </ul>
+                <div align="center">合計コスト {{costSum}} <font color="red" v-if="costSum>120">コスト超過</font><div v-else><button v-on:click="nextpage">次へ</button></div></div>
             </div>
-            <div>
+            <div v-if="page==4">
                 <h2>④シフトを組もう</h2>
                 <div>以下のルール<ul><li>開催期間は期末試験期間の2週間（10日間）とする</li><li>簡単のため、シフトは1日1枠だけとする</li><li>シフト1枠に何人の支部員を動員しても構わない</li><li>0人のシフト枠があっても構わない</li><li>シフト動員人数によって認知者数、決定率の変動は無いとする</li><li>1人につき4枠までしかシフトに入れてはいけない</li><li>シフト1枠でで対応できる客の数は（シフト人数）× 5人</li><li>客の人数制限以内の客に先着順で寄付してもらえるとする</li><li>それぞれのシフト枠に均等に客がくるとは限らない</li></ul>を心にとめてシフトを組んでみよう。<br>シフト人数を入力↓</div>
                 <table>
@@ -84,5 +59,8 @@
                 </table>
             </div>
         </div>
+        <!-- 開発バージョン、便利なコンソールの警告が含まれています -->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="./script.js"></script>
     </body>
 </html>
