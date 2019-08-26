@@ -62,6 +62,7 @@
                 </table>
                 <div v-if="siftSum<=24">あと {{24-siftSum}} 人シフトに入れます<div v-if="siftSum>0" align="center"><button v-on:click="nextpage">シフトを確定して次へ</button></div></div>
                 <div v-else><font color="red">シフト人数がオーバーしました。{{siftSum-24}}人減らしてください</font></div>
+                <button v-on:click="previouspage">戻る</button>
             </div>
             <div v-if="page==5" align="center">
                 <div>この企画で回収イベントを実施します</div>
@@ -75,7 +76,7 @@
                 <h2>★回収結果★</h2>
                 <div><span>回収冊数：</span><span>{{bookNum}}冊</span></div>
                 <div><span>寄付人数：</span><span>{{contributerList.length}}人</span></div>
-                <div><span>日別来客数</span><ol><li v-for="(num, index) in custNums">日目({{weeks[index%5]}}){{num}}人</li></ol></div>
+                <div><span>日別来客数</span><ol><li v-for="(num, index) in custNums">日目({{weeks[index%5]}}): {{num}}人</li></ol></div>
                 <div>
                     <div>その他データ</div>
                     <div>
@@ -107,12 +108,13 @@
                         </div>
                         <div>
                             <table>
-                                <tr><th>変数1¦変数2</th><th v-for="option in variables[eVariable2].options">{{option}}</th><th>合計</th></tr>
+                                <tr><th>{{oVariables[oVariable]}}</th><th v-for="option in variables[eVariable2].options">{{option}}</th><th>合計</th></tr>
                                 <tr v-for = "(data, index) in resultMatrixs[oVariable]"><th>{{variables[eVariable1].options[index]}}</th><td v-for="item in data">{{item}}</td></tr>
                                 <tr><th></th><td></td><td></td><td></td></tr>
                                 <tr><th></th><td></td><td></td><td></td></tr>
                             </table>
                         </div>
+                        <button v-on:click="restart">もう一度</button>
                     </div>
                 </div>
             </div>

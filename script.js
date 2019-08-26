@@ -45,10 +45,10 @@ var app = new Vue({
                 length:4,
             }
         ],
+        oVariables:["寄付人数","寄付冊数","平均寄付冊数"],
         oVariable:0,
         eVariable1:0,
         eVariable2:0,
-        
         gifts:[
             {num:0,code:"gift1",content:"ハーゲンダッツ券(当選者多数)"},
             {num:1,code:"gift2",content:"Amazonギフト(当選者数名)"},
@@ -118,7 +118,11 @@ var app = new Vue({
         },
         previouspage:function(){
             location.hash=(this.page-1);
-        }
+        },
+        restart:function(){
+            location.hash = 1;
+        },
+        
     },
     computed:{
         conceptValueSum:function(){
@@ -157,40 +161,32 @@ var app = new Vue({
             return {data:JSON.stringify(buf)};
         },
         resultMatrixs:function(){
-            var bufnum = [],bufbook = [],bufave = [];
-            console.log(bufnum);
-            var v1index = this.eVariable1 + 1;
+            var v1index = Number(this.eVariable1) + 1;
             var v1num = this.variables[this.eVariable1].length
-            var v2index = this.eVariable2 + 1;
+            var v2index = Number(this.eVariable2) + 1;
             var v2num = this.variables[this.eVariable2].length
             
             var bufList = this.contributerList;
             
-            for(var i = 0; i<v1num+1; i++){
-                var buf = [];
-                for(var j = 0;j<v2num+1;j++){
-                    buf.push(0);
-                }
-                bufnum.push(buf);
-                bufbook.push(buf);
-                bufave.push(buf);
-            }
+            var bufnum = mamkeZeroMatrix(v1num+1,v2num+1);
+            var bufbook = mamkeZeroMatrix(v1num+1,v2num+1);
+            var bufave = mamkeZeroMatrix(v1num+1,v2num+1);
             
-            console.log(JSON.stringify(bufList));
-            console.log(bufnum);
+            //console.log(JSON.stringify(bufList));
+            //console.log(bufnum);
             for(i = 0;i<bufList.length;i++){
                 var v1 = bufList[i][v1index];
                 var v2 = bufList[i][v2index];
-                console.log([v1,v2]);
-                bufnum[v1][v2] += 1;
-                bufbook[v1][v2] += bufList[i][5];
+                //console.log([v1,v2]);
+                bufnum[v1][v2] = Number(bufnum[v1][v2]) + 1;
+                bufbook[v1][v2] = Number(bufbook[v1][v2]) + bufList[i][5];
             }
-            console.log(bufnum)
+            //console.log(bufnum)
             
-            for(i=0; i<v1num; i++){
+            for(var i=0; i<v1num; i++){
                 var buf1 = 0;
                 var buf2 = 0;
-                for(j = 0; j<v2num; j++){
+                for(var j = 0; j<v2num; j++){
                     buf1 += bufnum[i][j];
                     buf2 += bufbook[i][j];
                 }
@@ -204,16 +200,17 @@ var app = new Vue({
                     buf1 += bufnum[i][j];
                     buf2 += bufbook[i][j];
                 }
-                bufnum[i][v2num] = buf1;
-                bufbook[i][v2num] = buf2;
+                console.log([buf1,buf2]);
+                bufnum[v1num][j] = buf1;
+                bufbook[v1num][j] = buf2;
             }
-//            for(i = 0; i<v1num+1; i++){
-//                for(j = 0;j<v2num+1;j++){
-//                    if(bufnum[i][j] > 0)bufave[i][j] = (bufbook[i][j]/bufnum[i][j]).toFixed(1);
-//                    else bufave[i][j] = 0;
-//                }
-//            }
-            return [bufnum, bufbook, bufave]
+            for(i = 0; i<v1num+1; i++){
+                for(j = 0;j<v2num+1;j++){
+                    if(bufnum[i][j] > 0)bufave[i][j] = (bufbook[i][j]/bufnum[i][j]).toFixed(1);
+                    else bufave[i][j] = 0;
+                }
+            }
+             return [bufnum, bufbook, bufave];
         }
     }
 });
@@ -235,8 +232,18 @@ function postData(data){
             location.hash = 7;
             app.contributerList = dt.contributerList;
             app.bookNum = dt.bookNum;
+            app.custNums = dt.custNums;
             
         }
       }
     );
+}
+
+function mamkeZeroMatrix(row,col){
+    var buf1 = [];
+    for(var i = 0; i<row; i++){
+            var buf2 = Array.apply(null, Array(col)).map(function () {return 0 });
+            buf1.push(buf2);
+    }
+    return buf1
 }
