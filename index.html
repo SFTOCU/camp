@@ -71,9 +71,56 @@
             <div v-if="page==6" align="center">
                 <div>回収中・・・</div>
             </div>
+            <div v-if="page==7">
+                <h2>★回収結果★</h2>
+                <div><span>回収冊数：</span><span>{{bookNum}}冊</span></div>
+                <div><span>寄付人数：</span><span>{{contributerList.length}}人</span></div>
+                <div><span>日別来客数</span><ol><li v-for="(num, index) in custNums">日目({{weeks[index%5]}}){{num}}人</li></ol></div>
+                <div>
+                    <div>その他データ</div>
+                    <div>
+                        <div>
+                            目的変数：
+                            <select v-model="oVariable">
+                                <option value="0">寄付人数</option>
+                                <option value="1">寄付冊数</option>
+                                <option value="2">平均寄付冊数</option>
+                            </select>
+                        </div>
+                        <div>
+                            説明変数1：
+                            <select v-model="eVariable1">
+                                <option value="0">学部</option>
+                                <option value="1">きっかけとなった媒体</option>
+                                <option value="2">寄付の目的</option>
+                                <option value="3">欲しい景品</option>
+                            </select>
+                        </div>
+                        <div>
+                            説明変数2：
+                            <select v-model="eVariable2">
+                                <option value="0">学部</option>
+                                <option value="1">きっかけとなった媒体</option>
+                                <option value="2">寄付の目的</option>
+                                <option value="3">欲しい景品</option>
+                            </select>
+                        </div>
+                        <div>
+                            <table>
+                                <tr><th>変数1¦変数2</th><th v-for="option in variables[eVariable2].options">{{option}}</th><th>合計</th></tr>
+                                <tr v-for = "(data, index) in resultMatrixs[oVariable]"><th>{{variables[eVariable1].options[index]}}</th><td v-for="item in data">{{item}}</td></tr>
+                                <tr><th></th><td></td><td></td><td></td></tr>
+                                <tr><th></th><td></td><td></td><td></td></tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- 開発バージョン、便利なコンソールの警告が含まれています -->
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
         <script src="./script.js"></script>
     </body>
 </html>

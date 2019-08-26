@@ -2,11 +2,58 @@ var app = new Vue({
     el:"#app",
     data:{
         page:0,
+        weeks:["月","火","水","木","金"],
+        bookNum:0,
+        contributerList:[],
+        custNums:[0,0,0,0,0,0,0,0,0,0],
+        variables:[
+            {
+                name:"学部",
+                options:{
+                    0:"理系",
+                    1:"文系"
+                },
+                length:2,
+            },
+            {
+                name:"きっかけ",
+                options:{
+                    0:"Twi",
+                    1:"Ins",
+                    2:"ポス",
+                    3:"友達",
+                },
+                length:4,
+            },
+            {
+                name:"目的",
+                options:{
+                    0:"国際",
+                    1:"処分",
+                    2:"景品",
+                },
+                length:3,
+            },
+            {
+                name:"景品",
+                options:{
+                    0:"ダッツ券",
+                    1:"Amaギフ",
+                    2:"夢の国",
+                    3:"switch"
+                },
+                length:4,
+            }
+        ],
+        oVariable:0,
+        eVariable1:0,
+        eVariable2:0,
+        
         gifts:[
-            {code:"gift1",content:"ハーゲンダッツ券(当選者多数)"},
-            {code:"gift2",content:"Amazonギフト(当選者数名)"},
-            {code:"gift3",content:"夢の国ペアチケット(当選者1名)"},
-            {code:"gift4",content:"switch先生(当選者1名)"}
+            {num:0,code:"gift1",content:"ハーゲンダッツ券(当選者多数)"},
+            {num:1,code:"gift2",content:"Amazonギフト(当選者数名)"},
+            {num:2,code:"gift3",content:"夢の国ペアチケット(当選者1名)"},
+            {num:3,code:"gift4",content:"switch先生(当選者1名)"}
         ],
         sgift:"undefind",
         concepts:[
@@ -94,6 +141,79 @@ var app = new Vue({
                 buf += Number(this.sifts[i]);
             }
             return buf
+        },
+        payload:function(){
+            var buf = {};
+            buf.gift = this.gifts[this.sgift];
+            buf.concepts = this.concepts;
+            buf.events = [];
+            for(var i=0; i<this.events.length; i++){                 
+                buf.events.push({soption:this.events[i].soption,title:this.events[i].title});
+            }
+            buf.sifts = this.sifts;
+            
+            //alert(JSON.stringify(buf));
+            
+            return {data:JSON.stringify(buf)};
+        },
+        resultMatrixs:function(){
+            var bufnum = [],bufbook = [],bufave = [];
+            console.log(bufnum);
+            var v1index = this.eVariable1 + 1;
+            var v1num = this.variables[this.eVariable1].length
+            var v2index = this.eVariable2 + 1;
+            var v2num = this.variables[this.eVariable2].length
+            
+            var bufList = this.contributerList;
+            
+            for(var i = 0; i<v1num+1; i++){
+                var buf = [];
+                for(var j = 0;j<v2num+1;j++){
+                    buf.push(0);
+                }
+                bufnum.push(buf);
+                bufbook.push(buf);
+                bufave.push(buf);
+            }
+            
+            console.log(JSON.stringify(bufList));
+            console.log(bufnum);
+            for(i = 0;i<bufList.length;i++){
+                var v1 = bufList[i][v1index];
+                var v2 = bufList[i][v2index];
+                console.log([v1,v2]);
+                bufnum[v1][v2] += 1;
+                bufbook[v1][v2] += bufList[i][5];
+            }
+            console.log(bufnum)
+            
+            for(i=0; i<v1num; i++){
+                var buf1 = 0;
+                var buf2 = 0;
+                for(j = 0; j<v2num; j++){
+                    buf1 += bufnum[i][j];
+                    buf2 += bufbook[i][j];
+                }
+                bufnum[i][v2num] = buf1;
+                bufbook[i][v2num] = buf2;
+            }
+            for(j=0; j<v2num+1; j++){
+                buf1 = 0;
+                buf2 = 0;
+                for(i=0; i<v1num; i++){
+                    buf1 += bufnum[i][j];
+                    buf2 += bufbook[i][j];
+                }
+                bufnum[i][v2num] = buf1;
+                bufbook[i][v2num] = buf2;
+            }
+//            for(i = 0; i<v1num+1; i++){
+//                for(j = 0;j<v2num+1;j++){
+//                    if(bufnum[i][j] > 0)bufave[i][j] = (bufbook[i][j]/bufnum[i][j]).toFixed(1);
+//                    else bufave[i][j] = 0;
+//                }
+//            }
+            return [bufnum, bufbook, bufave]
         }
     }
 });
@@ -102,5 +222,21 @@ window.onload = function(){
     app.page = Number(location.hash.slice(1));
     window.onhashchange = function(){
         app.page=Number(location.hash.slice(1));
+        if(app.page==6)postData(app.payload);
     };
 };
+
+function postData(data){
+    $.post("https://script.google.com/macros/s/AKfycbzR5-wI_YqfLv-5sGjDjlKzr-w0W5yAcs7V3klPpa6_8AVtlJ0/exec",
+      data,
+      function(dt){
+        if(dt.error)alert(JSON.stringify(dt));
+        if(dt.contributerList){
+            location.hash = 7;
+            app.contributerList = dt.contributerList;
+            app.bookNum = dt.bookNum;
+            
+        }
+      }
+    );
+}
