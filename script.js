@@ -1,6 +1,8 @@
 var app = new Vue({
     el:"#app",
     data:{
+        trialNum:0,
+        teamName:"",
         page:0,
         weeks:["月","火","水","木","金"],
         bookNum:0,
@@ -121,6 +123,7 @@ var app = new Vue({
         },
         restart:function(){
             location.hash = 1;
+            this.trialNum++;
         },
         
     },
@@ -155,7 +158,8 @@ var app = new Vue({
                 buf.events.push({soption:this.events[i].soption,title:this.events[i].title});
             }
             buf.sifts = this.sifts;
-            
+            buf.trialNum = this.trialNum;
+            buf.teamName = this.teamName;
             //alert(JSON.stringify(buf));
             
             return {data:JSON.stringify(buf)};

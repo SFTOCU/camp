@@ -2,12 +2,13 @@
 <html>
     <head>
         <title>回収ゲーム</title>
-        <link rel="stylesheet" src="style.css" />
+        <link rel="stylesheet" href="style.css" />
         <meta name="viewport" content="width=device-width">
         <meta charset="utf-8">
     </head>
     <body>
         <div id="app">
+            <div v-if="page>0"><b>{{teamName}}支部 : {{trialNum+1}}回目</b></div>
             <div v-if="page==0">
                 <h2>⓪はじめに</h2>
                 <div>このゲームの目的はSFTのメインイベントである回収イベントのシミュレーションを通して皆さんにデータ収集の大切さを実感してもらうことです。</div>
@@ -15,7 +16,8 @@
                 <div>企画が決まれば、プログラムが回収イベントの結果（回収冊数）を計算してくれるのでその冊数を競い合います。</div>
                 <div>このゲームにおいて、寄付冊数合計の期待値は<div align = "center">寄付冊数合計 = 認知者数 × 決定率 × 1人当たりの寄付冊数</div>の式で説明されるものとします。</div>
                 <div>どんな施策を打てばどの変数が変化するか考えて企画を立ててみましょう。</div>
-                <div align="center"><button v-on:click="nextpage">ゲームを始める</button></div>
+                <br>支部名を決めよう<input type=text v-model="teamName" >
+                <div align="center" v-if="teamName!=''"><button v-on:click="nextpage">ゲームを始める</button></div>
             </div>
             <div v-if="page==1">
                 <h2>①目玉景品を決めよう</h2>
